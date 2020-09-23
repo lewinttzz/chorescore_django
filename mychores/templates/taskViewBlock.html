@@ -9,14 +9,14 @@
 {% if instance.state in 'd,o,u' and instance.assignedProfile.user.username == username %}
   <form action="{% url 'task-done' instance.id%}" method="post">
       {% csrf_token %}
-      <input type="submit" class="btn" value="Done!" name="donebtn">
+      <input type="submit" value="Done!" name="donebtn">
   </form>
 {% endif %}
 
 {% if instance.state == 'p' and instance.assignedProfile.user.username != username %}
   <form action="{% url 'task-verified' instance.id%}" method="post">
       {% csrf_token %}
-      <input type="submit" class="btn" value="Verify" name="verifybtn">
+      <input type="submit" value="Verify" name="verifybtn">
   </form>
 {% endif %}
 

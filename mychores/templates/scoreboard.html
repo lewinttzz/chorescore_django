@@ -1,0 +1,16 @@
+{% extends "base_generic.html" %}
+
+{% block title %}
+<h1>Scoreboard</h1>
+{% endblock %}
+
+{% block content %}
+
+{% for profile in userProfiles %}
+  <p><a href="{% url 'Profile' profile.user%}">{{ profile.user }}</a>: {{ profile.score }}</p>
+  <hr>
+
+  {% endfor %}
+
+
+{% endblock %}

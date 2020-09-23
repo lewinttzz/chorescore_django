@@ -1,0 +1,27 @@
+
+<strong><p>{{instance.taskTbd.description}}</p></strong>
+<div>Responsible: {{instance.assignedProfile}}</div><p style="color:#FF0000";>{% if instance.assignedProfile.user.username == username %} (Me) {% endif %}</p> 
+<p>Due Date: {{instance.dueDate|date:"l"}}, {{instance.dueDate}}</p>
+<p>{{instance.get_state_display}}</p>
+<p>Task Score: {{instance.taskTbd.maxScore}}</p>
+
+
+{% if instance.state in 'd,o,u' and instance.assignedProfile.user.username == username %}
+  <form action="{% url 'task-done' instance.id%}" method="post">
+      {% csrf_token %}
+      <input type="submit" class="btn" value="Done!" name="donebtn">
+  </form>
+{% endif %}
+
+{% if instance.state == 'p' and instance.assignedProfile.user.username != username %}
+  <form action="{% url 'task-verified' instance.id%}" method="post">
+      {% csrf_token %}
+      <input type="submit" class="btn" value="Verify" name="verifybtn">
+  </form>
+{% endif %}
+
+{% if instance.state == 'f' %}
+<p>Verified by: {{instance.verifiedBy}}</p>
+{% endif %}
+
+<hr>

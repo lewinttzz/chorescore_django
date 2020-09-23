@@ -1,0 +1,18 @@
+{% extends "base_generic.html" %}
+
+{% block title %}
+<h1>Profile: {{profileOwner}} {% if isMe %} (Me) {% endif %} </h1>   
+{% endblock %}
+
+{% block content %}
+  <h4>Score: {{score}}</h4>
+  <hr>
+  <h3>Task History</h3>
+  {% for instance in taskHistory %}
+  <hr>
+  {% include "taskViewBlock.html" with instance=instance username=user.get_username %}
+
+  {% endfor %}
+
+
+{% endblock %}

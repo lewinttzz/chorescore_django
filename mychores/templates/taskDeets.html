@@ -1,0 +1,12 @@
+{% extends "base_generic.html" %}
+
+{% block title %}
+<h1>Task Details: {{taskCategory}}</h1>{% endblock %}
+
+{% block content %}
+  
+  {% for instance in taskInstances %}
+  {% include "taskViewBlock.html" with instance=instance username=user.get_username %}
+  {% endfor %}
+
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base_generic.html" %}
+
+{% block title %}
+<h1>Task Categories</h1>
+{% endblock %}
+
+{% block content %}
+  {% for task in taskCategories %}
+  <p><a href="{% url 'task-detail' task%}">{{task.description}}</a></p>
+  <p>{{task.details}}</p>
+  <hr>
+  {% endfor %}
+  <form action="{% url 'create-new-task' %}">
+    <input type="submit" value="Add Task Category">
+</form>
+{% endblock %}

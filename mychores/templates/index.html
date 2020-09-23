@@ -1,0 +1,54 @@
+{% extends "base_generic.html" %}
+
+
+{% block title %}
+<h1>My Tasks</h1>
+{% endblock %}
+
+{% block content %}
+  <form action="{% url 'create-task-instance' %}">
+    <input type="submit" value="Create Task">
+  </form>
+  <hr>
+
+  
+  {% if needsVerification|length == 0 and dueTasks|length == 0 and verificationPending|length == 0 and upcomingTasks|length == 0 %}
+  <h5>No tasks to be displayed</h3>
+  <hr>
+  {% endif %}
+
+  {% if needsVerification|length > 0 %}
+  <h4>Verification required</h4>
+  <hr>
+  {% for instance in needsVerification %}
+  {% include "taskViewBlock.html" with instance=instance username=user.get_username %}
+  {% endfor %}
+  {% endif %}
+
+  {% if dueTasks|length > 0 %}
+  <h4>Due Tasks</h4>
+  <hr>
+  {% for instance in dueTasks %}
+  {% include "taskViewBlock.html" with instance=instance username=user.get_username %}
+  {% endfor %}
+  {% endif %}
+
+
+  {% if verificationPending|length > 0 %}
+  <h4>Verification pending</h4>
+  <hr>
+  {% for instance in verificationPending %}
+  {% include "taskViewBlock.html" with instance=instance username=user.get_username %}
+  {% endfor %}
+  {% endif %}
+
+  {% if upcomingTasks|length > 0 %}
+  <h4>Upcoming Tasks</h4>
+  <hr>
+  {% for instance in upcomingTasks %}
+  {% include "taskViewBlock.html" with instance=instance username=user.get_username %}
+  {% endfor %}
+  {% endif %}
+
+
+{% endblock %}

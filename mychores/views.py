@@ -9,23 +9,24 @@ from django.db.models import Q
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 
-
-# Create your views here.
-
+#gather data to fill home page, displaying the most important information for the user:
+# ue and upcoming tasks, pending verifications from other users and unverified tasks
 @login_required
 def index(request):
     currentUser = request.user
 
+    #create instances (TODO: find new location for this)
     cats = Task.objects.filter(isActive=True)
     for task in cats:
         task.manageInstanceCreation()
 
+    #update due state (TODO: find new location for this)
     insts = Task_Instance.objects.all()
     for inst in insts:
         inst.manageInstanceState()
 
-    upcomingTasks = list(Task_Instance.objects.all().filter(assignedProfile__user = currentUser).filter(state= 'u').order_by('-dueDate'))
-    dueTasks = list(Task_Instance.objects.all().filter(assignedProfile__user = currentUser).filter(Q(state='d')|Q(state='o')).order_by('-dueDate'))
+    upcomingTasks = list(Task_Instance.objects.all().filter(assignedProfile__user = currentUser).filter(state= 'u').order_by('dueDate'))
+    dueTasks = list(Task_Instance.objects.all().filter(assignedProfile__user = currentUser).filter(Q(state='d')|Q(state='o')).order_by('dueDate'))
     verificationPending = list(Task_Instance.objects.all().filter(assignedProfile__user = currentUser).filter(state= 'p').order_by('-dueDate'))
     needsVerification = list(Task_Instance.objects.all().exclude(assignedProfile__user = currentUser).filter(state= 'p').order_by('-dueDate'))
 

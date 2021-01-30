@@ -20,7 +20,7 @@ class Task(models.Model):
 
     TASK_RECURRENCE_CATEGORY = [
         ('s', 'sporadic'),
-        ('r', 'recurrent'),
+        ('r', 'recurrentt'),
         ('f', 'fixed recurrent')
     ]        
 

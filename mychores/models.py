@@ -96,7 +96,7 @@ class Task_Instance(models.Model):
 
     notes = models.CharField(max_length=200, default= 'No notes available', blank = True)
 
-    isMostRecent = models.BooleanField(default = True)
+    isMostRecent = models.BooleanField(default = False)
 
     currentProjectedScore = models.IntegerField(default = 0)
 

@@ -111,7 +111,7 @@ def newTaskInstance(request):
     if request.method == 'POST':
         form = CreateTaskInstance(request.POST)
         formmodel = form.save(commit = False)
-        if form.is_valid() and not formmodel.taskTbd.isRecurrent:
+        if form.is_valid() and (formmodel.taskTbd.isRecurrent == 's'):
             newTask = form.save()
             newTask.assignedProfile = request.user.profile
             newTask.save()

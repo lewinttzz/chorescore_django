@@ -18,7 +18,13 @@ def findSuitableProfile():
 class Task(models.Model):
     description = models.CharField(max_length=20,primary_key='true', help_text='What\'s the name of the task?')
 
-    isRecurrent = models.BooleanField('Recurrent', help_text='Should the task be repeated in regular time intervals or on demand?')
+    TASK_RECURRENCE_CATEGORY = [
+        ('s', 'sporadic'),
+        ('r', 'recurrent'),
+        ('f', 'fixed recurrent')
+    ]        
+
+    isRecurrent = models.CharField(max_length=200,choices=TASK_RECURRENCE_CATEGORY, default='s', help_text='Should the task be repeated in regular time intervals or on demand?')
     
     recurrenceFrequency = models.DurationField(help_text='How often does the task need to be done?', blank=True,null=True)
     
@@ -46,16 +52,20 @@ class Task(models.Model):
             newInstance.save()
 
         today = datetime.date.today()
-        if self.isActive and self.isRecurrent: #task needs to fulfill requirements for automated instance creation
+        if self.isActive and (self.isRecurrent != 's'): #task needs to be recurrent and active for automated instance creation
             recentInstance = Task_Instance.objects.filter(taskTbd=self).filter(isMostRecent=True) #whats the last time this task was done?
             if not recentInstance:  #never done before
-                nestedInstanceCreate(self, today - self.recurrenceFrequency)   #create instance that is due today
+                    nestedInstanceCreate(self, today - self.recurrenceFrequency)   #create instance that is due today
             else:
                 recInst = recentInstance.get()
                 if recInst.state == 'f': #finished
                     recInst.isMostRecent = False
                     recInst.save()
-                    nestedInstanceCreate(self, recInst.finishedDate)
+                    if self.isRecurrent == 'r': #recurrent task that can be moved around
+                        nestedInstanceCreate(self, recInst.finishedDate)
+                    if self.isRecurrent == 'f': #taks that need to be performed at a fixed date
+                        nestedInstanceCreate(self, recInst.dueDate)
+            
 
 
 class Task_Instance(models.Model):
@@ -76,6 +86,8 @@ class Task_Instance(models.Model):
 
     dueDate = models.DateField(default=datetime.date.today())
 
+    admin_order_field = 'dueDate'
+
     finishedDate = models.DateField(null=True, blank = True)
 
     assignedProfile = models.ForeignKey('Profile',on_delete=models.CASCADE, null = True)
@@ -89,12 +101,11 @@ class Task_Instance(models.Model):
     currentProjectedScore = models.IntegerField(default = 0)
 
     def __str__(self):
-        return f'{self.taskTbd.description}, ID: {self.id}'
+        return f'{self.taskTbd.description}, Due: {self.dueDate}'
 
     def verifyTask(self,currentUserProfile):
         self.state = 'f'
         self.verifiedBy = currentUserProfile
-        self.finishedDate = datetime.date.today()
         self.save()
 
         self.assignedProfile.score = self.assignedProfile.score + self.taskTbd.maxScore
@@ -102,6 +113,7 @@ class Task_Instance(models.Model):
 
     def checkoffTask(self):
         self.state = 'p'
+        self.finishedDate = datetime.date.today()
         self.save()
 
     def manageInstanceState(self):
